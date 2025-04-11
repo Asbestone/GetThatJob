@@ -1,4 +1,4 @@
-import ResumeUpload from "../components/resumeupload";
+import ResumeUpload from "./components/resumeupload";
 
 export default function Home() {
   return (

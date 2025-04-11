@@ -1,6 +1,5 @@
 'use client'
 
-import { parse } from 'path';
 import React, {useState} from 'react';
 
 function ResumeUpload() {
@@ -12,25 +11,38 @@ function ResumeUpload() {
 
         if (selectedFile) {
             setFile(selectedFile);
-            parseFile(selectedFile);
-
+            sendFileToServer(selectedFile);
         } else {
             console.log("smth wrong with file, check function handleFileChange")
         }
     }
 
-    const parseFile = (selectedFile: File) => {
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-            setFileContent(reader.result as string);
+    const sendFileToServer = async (selectedFile: File) => {
+        const formData = new FormData();
+        formData.append("filepond", selectedFile);
+    
+        try {
+          const response = await fetch("/api/resumeparser", {
+            method: "POST",
+            body: formData,
+          });
+    
+          if (!response.ok) {
+            console.error("Server responded with an error:", response.statusText);
+            return;
+          }
+    
+          const result = await response.json();
+    
+          if (result.error) {
+            console.error("Error from server:", result.error);
+          } else {
+            setFileContent(result.parsedText);
+          }
+        } catch (error) {
+          console.error("Error sending file to server:", error);
         }
-        reader.onerror = () => {
-            console.log('Error reading file, look up parseFile');
-        }
-
-        reader.readAsText(selectedFile);
-    }
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white">
@@ -56,7 +68,7 @@ function ResumeUpload() {
             {fileContent && (
                 <div className="mt-4 w-full max-w-4xl overflow-y-auto" style={{ maxHeight: '60vh' }}>
                     <h3 className="text-xl">File Content:</h3>
-                    <pre className="whitespace-pre-wrap break-words">{fileContent}</pre>
+                    <pre className="whitespace-pre-wrap break-words text-black">{fileContent}</pre>
                 </div>
             )}
 
