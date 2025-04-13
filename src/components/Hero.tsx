@@ -22,7 +22,7 @@ interface Hero7Props {
 }
 
 const Hero7 = ({
-  heading = "A Collection of Components Built With Shadcn & Tailwind",
+  heading = "GetThatJob.",
   description = "Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.",
   button = {
     text: "Discover all components",
@@ -56,7 +56,7 @@ const Hero7 = ({
   },
 }: Hero7Props) => {
   return (
-    <section className="py-32 px-20">
+    <section className="py-28 px-20">
       <div className="container text-center">
         <div className="mx-auto flex max-w-screen-lg flex-col gap-6">
           <h1 className="text-4xl font-extrabold lg:text-7xl">{heading}</h1>

@@ -9,6 +9,7 @@ const page = () => {
       <NavbarComponent />
       <Hero />
       <MacbookScroll />
+      
     </div>
   )
 }
