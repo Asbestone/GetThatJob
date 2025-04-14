@@ -44,7 +44,13 @@ function ResumeUpload() {
           if (result.error) {
             console.error("Error from server:", result.error);
           } else {
-            setFileContent(result.cleanedText);
+
+            let rawJSON = result.cleanedText;
+            rawJSON = rawJSON.trim().replace(/^```json\s*/, '').replace(/```$/, '').trim(); // removing the markdown comments
+
+            const cleanedJSON = JSON.parse(rawJSON);
+            setFileContent(JSON.stringify(cleanedJSON)); // cleanedJSON is a json
+
           }
         } catch (error) {
           console.error("Error sending file to server:", error);
