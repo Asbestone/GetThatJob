@@ -31,13 +31,20 @@ function ResumeUpload() {
             console.error("Server responded with an error:", response.statusText);
             return;
           }
-    
-          const result = await response.json();
+
+          const rawResult = await response.json();
+
+          const cleanedResponse = await fetch("/api/cleanparsed", {
+            method: "POST",
+            body: rawResult.parsedText,
+          })
+
+          const result = await cleanedResponse.json();
     
           if (result.error) {
             console.error("Error from server:", result.error);
           } else {
-            setFileContent(result.parsedText);
+            setFileContent(result.cleanedText);
           }
         } catch (error) {
           console.error("Error sending file to server:", error);
