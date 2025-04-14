@@ -22,7 +22,7 @@ const Navbar = () => {
               <path d="M6 9.01V9" />
               <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" />
             </svg>
-            ResumeScore
+            blank
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">

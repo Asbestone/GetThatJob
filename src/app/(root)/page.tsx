@@ -1,3 +1,4 @@
+import Features from '@/components/Features';
 import Hero from '@/components/Hero';
 import Navbar from '@/components/Navbar';
 import { MacbookScroll } from '@/components/ui/macbook-scroll';
@@ -8,7 +9,8 @@ const page = () => {
     <div>
       <Navbar />
       <Hero />
-      <MacbookScroll />
+      {/* <MacbookScroll /> */}
+      <Features />
       
     </div>
   )
