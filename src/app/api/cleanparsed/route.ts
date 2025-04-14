@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const aiResponse = await ai.models.generateContent({
         model: "gemini-2.0-flash-lite", // this model is ideal for our usecase with higher rpm and lower performance
         contents: "explain how ai works in 10 words",
-    })
+    });
 
     console.log(aiResponse.text);
     console.log(cleanedText);
