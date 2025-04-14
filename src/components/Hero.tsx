@@ -23,7 +23,7 @@ interface Hero7Props {
 
 const Hero7 = ({
   heading = "GetThatJob.",
-  description = "Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.",
+  description = "Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt",
   button = {
     text: "Discover all components",
     url: "https://www.shadcnblocks.com",
