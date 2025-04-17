@@ -55,7 +55,8 @@ function ResumeUpload() {
             const cleanedFeatureJSON = JSON.parse(rawFeatureJSON);
 
             //setFileContent(JSON.stringify(cleanedParsedJSON)); // cleanedJSON is a json
-            setFileContent(cleanedParsedJSON + "\n\n\n" + cleanedFeatureJSON)
+            //setFileContent(rawParsedJSON + "\n\n\n" + rawFeatureJSON);
+            setFileContent("parsed");
 
           }
         } catch (error) {

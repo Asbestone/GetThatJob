@@ -34,5 +34,6 @@ export async function POST(req: NextRequest) {
     const cleanedText = aiResponseClean.text;
     const featureText = aiResponseFeature.text;
 
+    console.log("Succesfully processed raw parsed data");
     return NextResponse.json({ cleanedText, featureText });
 }
