@@ -45,11 +45,17 @@ function ResumeUpload() {
             console.error("Error from server:", result.error);
           } else {
 
-            let rawJSON = result.cleanedText;
-            rawJSON = rawJSON.trim().replace(/^```json\s*/, '').replace(/```$/, '').trim(); // removing the markdown comments
+            let rawParsedJSON = result.cleanedText;
+            rawParsedJSON = rawParsedJSON.trim().replace(/^```json\s*/, '').replace(/```$/, '').trim(); // removing the markdown comments
 
-            const cleanedJSON = JSON.parse(rawJSON);
-            setFileContent(JSON.stringify(cleanedJSON)); // cleanedJSON is a json
+            let rawFeatureJSON = result.featureText;
+            rawFeatureJSON = rawFeatureJSON.trim().replace(/^```json\s*/, '').replace(/```$/, '').trim();
+
+            const cleanedParsedJSON = JSON.parse(rawParsedJSON);
+            const cleanedFeatureJSON = JSON.parse(rawFeatureJSON);
+
+            //setFileContent(JSON.stringify(cleanedParsedJSON)); // cleanedJSON is a json
+            setFileContent(cleanedParsedJSON + "\n\n\n" + cleanedFeatureJSON)
 
           }
         } catch (error) {
