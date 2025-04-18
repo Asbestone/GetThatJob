@@ -54,9 +54,7 @@ function ResumeUpload() {
             const cleanedParsedJSON = JSON.parse(rawParsedJSON);
             const cleanedFeatureJSON = JSON.parse(rawFeatureJSON);
 
-            //setFileContent(JSON.stringify(cleanedParsedJSON)); // cleanedJSON is a json
-            //setFileContent(rawParsedJSON + "\n\n\n" + rawFeatureJSON);
-            setFileContent("parsed");
+            setFileContent(cleanedParsedJSON);
 
           }
         } catch (error) {
@@ -92,7 +90,7 @@ function ResumeUpload() {
                 </div>
             )}
 
-            </div>
+        </div>
     )
 };
 

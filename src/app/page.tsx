@@ -1,4 +1,5 @@
 import ResumeUpload from "./components/resumeupload";
+import CompanyDB from "./components/companydb";
 
 export default function Home() {
   return (
