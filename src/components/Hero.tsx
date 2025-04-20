@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ArrowDownRight, Star } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
@@ -30,6 +31,7 @@ interface HeroProps {
       alt: string;
     }[];
   };
+  badge?: string;
   integrations?: Integration[][];
 }
 
@@ -245,6 +247,7 @@ const Hero = ({
       },
     ],
   },
+  badge = "✨www.getthatjob.com🎉",
 }: HeroProps) => {
   return (
     <section className="relative overflow-hidden px-20">
@@ -260,6 +263,7 @@ const Hero = ({
           <div className="z-20 -mx-4 w-full shrink-0 bg-background px-4 pt-32 md:w-1/2 md:bg-transparent md:pb-32">
             <div className="flex flex-col items-start text-left">
               <div className="max-w-sm">
+              <Badge variant="outline">{badge}</Badge>
                 <h1 className="my-6 text-4xl font-bold text-pretty lg:text-6xl">
                   {heading}
                 </h1>

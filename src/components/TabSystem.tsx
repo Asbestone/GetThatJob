@@ -26,7 +26,7 @@ interface Feature108Props {
   tabs?: Tab[];
 }
 
-const Feature108 = ({
+const TabSystem = ({
   badge = "shadcnblocks.com",
   heading = "A Collection of Components Built With Shadcn & Tailwind",
   description = "Join us to build flawless web solutions.",
@@ -79,7 +79,7 @@ const Feature108 = ({
   ],
 }: Feature108Props) => {
   return (
-    <section className="py-32">
+    <section className="pb-10">
       <div className="container mx-auto">
         <div className="flex flex-col items-center gap-4 text-center">
           <Badge variant="outline">{badge}</Badge>
@@ -141,4 +141,4 @@ const Feature108 = ({
   );
 };
 
-export { Feature108 };
+export default TabSystem;

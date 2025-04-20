@@ -1,6 +1,7 @@
 import Features from '@/components/Features';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import TabSystem from '@/components/TabSystem';
 
 const page = () => {
   return (
@@ -8,6 +9,7 @@ const page = () => {
       <Navbar />
       {/* <Hero /> */}
       <Hero/>
+      <TabSystem />
       <Features />
       
     </div>
