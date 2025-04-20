@@ -1,10 +1,15 @@
-import { Star, ArrowDownRight } from "lucide-react";
-import React from "react";
-
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ArrowDownRight, Star } from "lucide-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
-interface Hero7Props {
+
+interface Integration {
+  id: string;
+  icon: React.ReactNode;
+}
+
+interface HeroProps {
   heading?: string;
   description?: string;
   buttons?: {
@@ -25,11 +30,12 @@ interface Hero7Props {
       alt: string;
     }[];
   };
+  integrations?: Integration[][];
 }
 
-const Hero7 = ({
+const Hero = ({
   heading = "GetThatJob.",
-  description = "Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt",
+  description = "Fully decomposable components, all the images and background patterns are individual images or svgs that can be replaced.",
   buttons = {
     primary: {
       text: "Sign Up",
@@ -40,6 +46,179 @@ const Hero7 = ({
       url: "https://www.shadcnblocks.com",
     },
   },
+  integrations = [
+    [
+      {
+        id: "integration-1",
+        icon: (
+          <Image
+            alt="Integration"
+            src="/company-logos/google-logo.png"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-2",
+        icon: (
+          <Image
+            alt="Integration"
+            src="/company-logos/apple-logo.png"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-3",
+        icon: (
+          <Image
+            alt="Integration"
+            src="/company-logos/tesla-logo.png"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-4",
+        icon: (
+          <Image
+            alt="Integration"
+            src="/company-logos/meta-logo.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-5",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-5.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+    ],
+    [
+      {
+        id: "integration-6",
+        icon: (
+          <Image
+            alt="Integration"
+            src="/company-logos/openai-logo.svg"
+            width={200}
+            height={200}
+          />
+        ),
+      },
+      {
+        id: "integration-7",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-1.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-8",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-2.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-9",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-3.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-10",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-4.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+    ],
+    [
+      {
+        id: "integration-11",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-5.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-12",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-6.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-13",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-1.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-14",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-2.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+      {
+        id: "integration-15",
+        icon: (
+          <Image
+            alt="Integration"
+            src="https://www.shadcnblocks.com/images/block/block-3.svg"
+            width={100}
+            height={100}
+          />
+        ),
+      },
+    ],
+  ],
   reviews = {
     count: 200,
     rating: 5.0,
@@ -66,54 +245,90 @@ const Hero7 = ({
       },
     ],
   },
-}: Hero7Props) => {
+}: HeroProps) => {
   return (
-    <section className="pt-28 px-20">
-      <div className="container text-center">
-        <div className="mx-auto flex max-w-screen-lg flex-col gap-6">
-          <h1 className="text-4xl font-extrabold lg:text-7xl">{heading}</h1>
-          <p className="text-balance text-muted-foreground lg:text-lg">
-            {description}
-          </p>
-        </div>
-        <div className="flex flex-col justify-center gap-2 sm:flex-row ">
-            {buttons.primary && (
-              <Button size="lg" asChild className="w-full sm:w-auto mt-10">
-                <a href={buttons.primary.url}>{buttons.primary.text}</a>
-              </Button>
-            )}
-            {buttons.secondary && (
-              <Button size="lg" asChild className="w-full sm:w-auto mt-10" variant="outline">
-                <a href={buttons.secondary.url}>
-                  {buttons.secondary.text}
-                  <ArrowDownRight className="size-4" />
-                </a>
-              </Button>
-            )}
-          </div>
-        <div className="mx-auto mt-10 flex w-fit flex-col items-center gap-4 sm:flex-row">
-          <span className="mx-4 inline-flex items-center -space-x-4">
-            {reviews.avatars.map((avatar, index) => (
-              <Avatar key={index} className="size-14 border">
-                <AvatarImage src={avatar.src} alt={avatar.alt} />
-              </Avatar>
-            ))}
-          </span>
-          <div>
-            <div className="flex items-center gap-1">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  className="size-5 fill-yellow-400 text-yellow-400"
-                />
-              ))}
-              <span className="mr-1 font-semibold">
-                {reviews.rating?.toFixed(1)}
-              </span>
+    <section className="relative overflow-hidden px-20">
+      <div className="absolute inset-x-1 top-0 flex h-full w-full items-center justify-center opacity-100">
+        <img
+          alt="background"
+          src="https://shadcnblocks.com/images/block/patterns/square-alt-grid.svg"
+          className="opacity-90 [mask-image:radial-gradient(75%_75%_at_center,white,transparent)]"
+        />
+      </div>
+      <div className="relative">
+        <div className="relative container flex flex-col items-start md:flex-row md:items-center md:-space-x-26">
+          <div className="z-20 -mx-4 w-full shrink-0 bg-background px-4 pt-32 md:w-1/2 md:bg-transparent md:pb-32">
+            <div className="flex flex-col items-start text-left">
+              <div className="max-w-sm">
+                <h1 className="my-6 text-4xl font-bold text-pretty lg:text-6xl">
+                  {heading}
+                </h1>
+                <p className="text-muted-foreground">{description}</p>
+                <div className="flex flex-col justify-start gap-2 sm:flex-row ">
+                  {buttons.primary && (
+                    <Button size="lg" asChild className="w-full sm:w-auto mt-5">
+                      <a href={buttons.primary.url}>{buttons.primary.text}</a>
+                    </Button>
+                  )}
+                  {buttons.secondary && (
+                    <Button
+                      size="lg"
+                      asChild
+                      className="w-full sm:w-auto mt-5"
+                      variant="outline"
+                    >
+                      <a href={buttons.secondary.url}>
+                        {buttons.secondary.text}
+                        <ArrowDownRight className="size-4" />
+                      </a>
+                    </Button>
+                  )}
+                </div>
+                <div className="mx-auto mt-10 flex w-fit flex-col items-start gap-4 sm:flex-row">
+                  <span className="mr-4 inline-flex items-start -space-x-4">
+                    {reviews.avatars.map((avatar, index) => (
+                      <Avatar key={index} className="size-14 border">
+                        <AvatarImage src={avatar.src} alt={avatar.alt} />
+                      </Avatar>
+                    ))}
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, index) => (
+                        <Star
+                          key={index}
+                          className="size-5 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                      <span className="mr-1 font-semibold">
+                        {reviews.rating?.toFixed(1)}
+                      </span>
+                    </div>
+                    <p className="text-left font-medium text-muted-foreground">
+                      from {reviews.count}+ reviews
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="text-left font-medium text-muted-foreground">
-              from {reviews.count}+ reviews
-            </p>
+          </div>
+          <div>
+            <div className="flex flex-col gap-16 pt-12 pb-8 md:py-32">
+              {integrations.map((line, i) => (
+                <div key={i} className="flex gap-x-22 odd:-translate-x-22">
+                  {line.map((integration) => (
+                    <div
+                      key={integration.id}
+                      className="size-22 rounded-xl border border-background bg-background shadow-xl"
+                    >
+                      <div className="h-full w-full bg-muted/20 p-4">
+                        {integration.icon}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -121,4 +336,4 @@ const Hero7 = ({
   );
 };
 
-export default Hero7;
+export default Hero;
