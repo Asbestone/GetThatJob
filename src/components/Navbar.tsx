@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 const Navbar = () => {
   return (
     <>
-      <header className="border-b bg-background/95 px-10 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+      <header className="bg-background/95 px-20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-24 items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -22,19 +22,19 @@ const Navbar = () => {
               <path d="M6 9.01V9" />
               <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" />
             </svg>
-            blank
+            GetThatJob.
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" className="text-sm font-medium hover:underline underline-offset-4">
+            <Link href="#features" className="text-md font-medium hover:underline underline-offset-4">
               Features
             </Link>
-            <Link href="#how-it-works" className="text-sm font-medium hover:underline underline-offset-4">
+            <Link href="#how-it-works" className="text-md font-medium hover:underline underline-offset-4">
               How It Works
             </Link>
-            <Link href="#pricing" className="text-sm font-medium hover:underline underline-offset-4">
+            <Link href="#pricing" className="text-md font-medium hover:underline underline-offset-4">
               Pricing
             </Link>
-            <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4">
+            <Link href="#testimonials" className="text-md font-medium hover:underline underline-offset-4">
               Testimonials
             </Link>
           </nav>

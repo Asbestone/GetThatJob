@@ -2,7 +2,7 @@
 const Features = () => {
   return (
     <>
-      <section id="features" className="container px-10 py-20 md:py-24 lg:py-32">
+      <div className="px-20">
           <div className="text-center mb-16">
             <h3 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Features That Get You Hired</h3>
             <p className="mt-4 text-lg text-muted-foreground md:text-xl max-w-3xl mx-auto">
@@ -134,7 +134,7 @@ const Features = () => {
               </div>
             ))}
           </div>
-        </section>
+        </div>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, ArrowDownRight } from "lucide-react";
 import React from "react";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -7,9 +7,15 @@ import { Button } from "@/components/ui/button";
 interface Hero7Props {
   heading?: string;
   description?: string;
-  button?: {
-    text: string;
-    url: string;
+  buttons?: {
+    primary?: {
+      text: string;
+      url: string;
+    };
+    secondary?: {
+      text: string;
+      url: string;
+    };
   };
   reviews?: {
     count: number;
@@ -24,9 +30,15 @@ interface Hero7Props {
 const Hero7 = ({
   heading = "GetThatJob.",
   description = "Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt Jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jptJpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt jpt",
-  button = {
-    text: "Discover all components",
-    url: "https://www.shadcnblocks.com",
+  buttons = {
+    primary: {
+      text: "Sign Up",
+      url: "https://www.shadcnblocks.com",
+    },
+    secondary: {
+      text: "Get Started",
+      url: "https://www.shadcnblocks.com",
+    },
   },
   reviews = {
     count: 200,
@@ -56,7 +68,7 @@ const Hero7 = ({
   },
 }: Hero7Props) => {
   return (
-    <section className="py-28 px-20">
+    <section className="pt-28 px-20">
       <div className="container text-center">
         <div className="mx-auto flex max-w-screen-lg flex-col gap-6">
           <h1 className="text-4xl font-extrabold lg:text-7xl">{heading}</h1>
@@ -64,9 +76,21 @@ const Hero7 = ({
             {description}
           </p>
         </div>
-        <Button asChild size="lg" className="mt-10">
-          <a href={button.url}>{button.text}</a>
-        </Button>
+        <div className="flex flex-col justify-center gap-2 sm:flex-row ">
+            {buttons.primary && (
+              <Button size="lg" asChild className="w-full sm:w-auto mt-10">
+                <a href={buttons.primary.url}>{buttons.primary.text}</a>
+              </Button>
+            )}
+            {buttons.secondary && (
+              <Button size="lg" asChild className="w-full sm:w-auto mt-10" variant="outline">
+                <a href={buttons.secondary.url}>
+                  {buttons.secondary.text}
+                  <ArrowDownRight className="size-4" />
+                </a>
+              </Button>
+            )}
+          </div>
         <div className="mx-auto mt-10 flex w-fit flex-col items-center gap-4 sm:flex-row">
           <span className="mx-4 inline-flex items-center -space-x-4">
             {reviews.avatars.map((avatar, index) => (
