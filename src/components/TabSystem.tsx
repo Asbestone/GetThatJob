@@ -27,9 +27,9 @@ interface Feature108Props {
 }
 
 const TabSystem = ({
-  badge = "shadcnblocks.com",
-  heading = "A Collection of Components Built With Shadcn & Tailwind",
-  description = "Join us to build flawless web solutions.",
+  badge = "Babbal Resume",
+  heading = "Job taile pais bhai sureai ho!",
+  description = "Join us to get your dream job.",
   tabs = [
     {
       value: "tab-1",
