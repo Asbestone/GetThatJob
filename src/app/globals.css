@@ -149,3 +149,29 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+.animate-marquee-horizontal {
+  animation: marquee-x var(--duration) infinite linear;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-y var(--duration) linear infinite;
+}

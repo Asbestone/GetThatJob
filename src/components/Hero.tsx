@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDownRight, Star } from "lucide-react";
+import { ArrowDownRight, Star, CheckCircle } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
@@ -261,11 +261,11 @@ const Hero = ({
       </div>
       <div className="relative">
         <div className="relative container flex flex-col items-start gap-10 md:flex-row md:items-center md:-space-x-0">
-          <div className="z-20 w-full shrink-0 bg-background px-2 pt-10 sm:px-4 md:w-1/2 md:bg-transparent md:pb-32">
+          <div className="z-20 w-full shrink-0 bg-background px-2 pt-20 sm:px-4 md:w-1/2 md:bg-transparent md:pb-32">
             <div className="flex flex-col items-start text-left">
               <div className="max-w-sm w-full">
-                <Badge className="p-1" variant="outline">{badge}</Badge>
-                <h1 className="my-6 text-3xl sm:text-4xl font-bold text-pretty lg:text-6xl">
+                <Badge variant="outline">{badge}</Badge>
+                <h1 className="my-3 text-3xl sm:text-4xl font-bold text-pretty lg:text-6xl">
                   {heading}
                 </h1>
                 <p className="text-muted-foreground text-base sm:text-lg">{description}</p>
@@ -314,6 +314,13 @@ const Hero = ({
                     <p className="text-left font-medium text-muted-foreground">
                       from {reviews.count}+ reviews
                     </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-5">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>No credit card required</span>
+                    <span className="mx-2">•</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Free analysis for your first resume</span>
                   </div>
                 </div>
               </div>

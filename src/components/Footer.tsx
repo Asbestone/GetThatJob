@@ -47,7 +47,7 @@ const Footer = ({
   },
 }: FooterProps) => {
   return (
-    <section className="py-24 px-20">
+    <section className="py-20 mx-20">
       <div className="container">
         <div className="flex w-full flex-col items-center justify-between gap-10 text-center lg:flex-row lg:items-start lg:text-left">
           <div className="flex w-full flex-col items-center justify-between gap-6 lg:items-start">
