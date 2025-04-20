@@ -4,7 +4,6 @@ import { ArrowDownRight, Star } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-
 interface Integration {
   id: string;
   icon: React.ReactNode;
@@ -37,15 +36,15 @@ interface HeroProps {
 
 const Hero = ({
   heading = "GetThatJob.",
-  description = "Fully decomposable components, all the images and background patterns are individual images or svgs that can be replaced.",
+  description = "Ipsom dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.",
   buttons = {
     primary: {
       text: "Sign Up",
-      url: "https://www.shadcnblocks.com",
+      url: "#",
     },
     secondary: {
       text: "Get Started",
-      url: "https://www.shadcnblocks.com",
+      url: "#",
     },
   },
   integrations = [
@@ -99,7 +98,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-5.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -123,7 +122,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-1.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -134,7 +133,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-2.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -145,7 +144,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-3.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -156,7 +155,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-4.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -169,7 +168,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-5.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -180,7 +179,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-6.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -191,7 +190,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-1.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -202,7 +201,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-2.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -213,7 +212,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="https://www.shadcnblocks.com/images/block/block-3.svg"
+            src="/company-logos/google-logo.png"
             width={100}
             height={100}
           />
@@ -250,24 +249,26 @@ const Hero = ({
   badge = "✨www.getthatjob.com🎉",
 }: HeroProps) => {
   return (
-    <section className="relative overflow-hidden px-20">
-      <div className="absolute inset-x-1 top-0 flex h-full w-full items-center justify-center opacity-100">
-        <img
+    <section className="relative overflow-hidden px-10 sm:px-6 md:px-10 lg:px-20">
+      <div className="absolute inset-x-0 top-0 flex h-full w-full items-center justify-center opacity-100 pointer-events-none select-none">
+        <Image
           alt="background"
           src="https://shadcnblocks.com/images/block/patterns/square-alt-grid.svg"
           className="opacity-90 [mask-image:radial-gradient(75%_75%_at_center,white,transparent)]"
+          width={1600}
+          height={800}
         />
       </div>
       <div className="relative">
-        <div className="relative container flex flex-col items-start md:flex-row md:items-center md:-space-x-26">
-          <div className="z-20 -mx-4 w-full shrink-0 bg-background px-4 pt-32 md:w-1/2 md:bg-transparent md:pb-32">
+        <div className="relative container flex flex-col items-start gap-10 md:flex-row md:items-center md:-space-x-0">
+          <div className="z-20 w-full shrink-0 bg-background px-2 pt-10 sm:px-4 md:w-1/2 md:bg-transparent md:pb-32">
             <div className="flex flex-col items-start text-left">
-              <div className="max-w-sm">
-              <Badge variant="outline">{badge}</Badge>
-                <h1 className="my-6 text-4xl font-bold text-pretty lg:text-6xl">
+              <div className="max-w-sm w-full">
+                <Badge className="p-1" variant="outline">{badge}</Badge>
+                <h1 className="my-6 text-3xl sm:text-4xl font-bold text-pretty lg:text-6xl">
                   {heading}
                 </h1>
-                <p className="text-muted-foreground">{description}</p>
+                <p className="text-muted-foreground text-base sm:text-lg">{description}</p>
                 <div className="flex flex-col justify-start gap-2 sm:flex-row ">
                   {buttons.primary && (
                     <Button size="lg" asChild className="w-full sm:w-auto mt-5">
@@ -287,15 +288,17 @@ const Hero = ({
                       </a>
                     </Button>
                   )}
-                </div>
-                <div className="mx-auto mt-10 flex w-fit flex-col items-start gap-4 sm:flex-row">
-                  <span className="mr-4 inline-flex items-start -space-x-4">
-                    {reviews.avatars.map((avatar, index) => (
-                      <Avatar key={index} className="size-14 border">
-                        <AvatarImage src={avatar.src} alt={avatar.alt} />
-                      </Avatar>
-                    ))}
-                  </span>
+              </div>
+            </div>
+          </div>
+          <div className="w-full">
+                    <span className="mr-4 inline-flex items-start -space-x-4 py-5">
+                      {reviews.avatars.map((avatar, index) => (
+                        <Avatar key={index} className="size-14 border">
+                          <AvatarImage src={avatar.src} alt={avatar.alt} />
+                        </Avatar>
+                      ))}
+                    </span>
                   <div>
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, index) => (
@@ -314,9 +317,6 @@ const Hero = ({
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div>
             <div className="flex flex-col gap-16 pt-12 pb-8 md:py-32">
               {integrations.map((line, i) => (
                 <div key={i} className="flex gap-x-22 odd:-translate-x-22">
@@ -332,7 +332,6 @@ const Hero = ({
                   ))}
                 </div>
               ))}
-            </div>
           </div>
         </div>
       </div>
