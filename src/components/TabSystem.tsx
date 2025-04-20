@@ -34,12 +34,12 @@ const TabSystem = ({
     {
       value: "tab-1",
       icon: <Zap className="h-auto w-4 shrink-0" />,
-      label: "Boost Revenue",
+      label: "Upload your Resume",
       content: {
-        badge: "Modern Tactics",
-        title: "Make your site a true standout.",
+        badge: "Onboaring✨",
+        title: "Make your Resume standout.",
         description:
-          "Discover new web trends that help you craft sleek, highly functional sites that drive traffic and convert leads into customers.",
+          "Create a stunning resume that showcases your skills and experience. Our platform helps you build a professional resume that gets noticed.",
         buttonText: "See Plans",
         imageSrc:
           "https://shadcnblocks.com/images/block/placeholder-dark-1.svg",
@@ -49,12 +49,12 @@ const TabSystem = ({
     {
       value: "tab-2",
       icon: <Pointer className="h-auto w-4 shrink-0" />,
-      label: "Higher Engagement",
+      label: "Let AI do its thing for you",
       content: {
-        badge: "Expert Features",
-        title: "Boost your site with top-tier design.",
+        badge: "AI to your Aid ",
+        title: "Boost your Resume with bla bla.",
         description:
-          "Use stellar design to easily engage users and strengthen their loyalty. Create a seamless experience that keeps them coming back for more.",
+          "Enhance your resume with AI-powered tools that help you highlight your strengths and achievements. Our platform uses advanced technology to optimize your resume.",
         buttonText: "See Tools",
         imageSrc:
           "https://shadcnblocks.com/images/block/placeholder-dark-2.svg",
@@ -64,12 +64,12 @@ const TabSystem = ({
     {
       value: "tab-3",
       icon: <Layout className="h-auto w-4 shrink-0" />,
-      label: "Stunning Layouts",
+      label: "Stunning Results",
       content: {
-        badge: "Elite Solutions",
-        title: "Build an advanced web experience.",
+        badge: "Get Hired!",
+        title: "Get noticed by employers.",
         description:
-          "Lift your brand with modern tech that grabs attention and drives action. Create a digital experience that stands out from the crowd.",
+          "Our platform helps you create a resume that stands out from the competition. With our tools, you can showcase your skills and experience in a way that catches the attention of employers.",
         buttonText: "See Options",
         imageSrc:
           "https://shadcnblocks.com/images/block/placeholder-dark-3.svg",
@@ -79,7 +79,7 @@ const TabSystem = ({
   ],
 }: Feature108Props) => {
   return (
-    <section className="pb-10">
+    <section className="pb-10 px-10">
       <div className="container mx-auto">
         <div className="flex flex-col items-center gap-4 text-center">
           {/* <h1 className="max-w-2xl text-3xl font-semibold md:text-4xl">

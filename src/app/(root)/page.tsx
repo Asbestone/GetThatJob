@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import TabSystem from '@/components/TabSystem';
 import Team from '@/components/Team';
+import Footer from '@/components/Footer';
 
 const page = () => {
   return (
@@ -13,7 +14,8 @@ const page = () => {
       <TabSystem />
       <Features />
       <Team />
-      
+
+      <Footer />
     </div>
   )
 }
