@@ -54,7 +54,7 @@ function ResumeUpload() {
             const cleanedParsedJSON = JSON.parse(rawParsedJSON);
             const cleanedFeatureJSON = JSON.parse(rawFeatureJSON);
 
-            setFileContent(cleanedParsedJSON);
+            setFileContent(rawParsedJSON);
 
           }
         } catch (error) {
