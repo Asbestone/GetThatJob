@@ -9,11 +9,10 @@ const Cta = () => {
         <div className="flex flex-col gap-16 overflow-hidden rounded-lg bg-accent p-8 sm:gap-5 md:rounded-xl lg:flex-row lg:items-center lg:p-1">
           <div className="flex-1">
             <h3 className="mb-3 text-2xl font-semibold md:mb-4 md:text-4xl lg:mb-6">
-              Call to Action
+            Ready to Land Your Dream Tech Job?
             </h3>
             <p className="text-muted-foreground lg:text-lg">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig
-              doloremque mollitia fugiat omnis!
+            Join thousands of successful job seekers who have improved their resumes and landed interviews at top tech companies.
             </p>
             <div className="p-2 md:w-1/2">
             <ul className="flex w-full flex-col space-y-2 text-sm font-medium sm:text-base">
@@ -28,7 +27,7 @@ const Cta = () => {
             </ul>
           </div>
             <Button className="mt-6">
-              Get Started <ArrowRight className="ml-2 size-4" />
+              Get Started for Free <ArrowRight className="ml-2 size-4" />
             </Button>
           </div>
           <div className="shrink-0">

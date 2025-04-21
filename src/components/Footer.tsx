@@ -43,13 +43,13 @@ const Footer = ({
     url: "#",
     src: "https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg",
     alt: "logo",
-    title: "getthatjob.com",
+    title: "Getthatjob.com",
   },
 }: FooterProps) => {
   return (
-    <section className="py-20 mx-20">
+    <section className="pt-20 pb-10 mx-20">
       <div className="container">
-        <div className="flex w-full flex-col items-center justify-between gap-10 text-center lg:flex-row lg:items-start lg:text-left">
+        <div className="flex w-full flex-col items-center justify-between gap-x-20 text-center lg:flex-row lg:items-start lg:text-left">
           <div className="flex w-full flex-col items-center justify-between gap-6 lg:items-start">
             {/* Logo */}
             <div className="flex items-center gap-2 lg:justify-start">
