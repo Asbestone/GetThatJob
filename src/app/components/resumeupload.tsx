@@ -5,6 +5,7 @@ import React, {useState} from 'react';
 function ResumeUpload() {
     const [file, setFile] = useState<File | null>(null);
     const [fileContent, setFileContent] = useState<string | null>(null);
+    const [company, setCompany] = useState<string>("");
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -78,9 +79,9 @@ function ResumeUpload() {
             />
 
             {file && (
-                <div className="mt-4">
+              <div className="mt-4 w-full max-w-4xl">
                 <p className="text-gray-700">File selected: {file.name}</p>
-                </div>
+              </div>
             )}
 
             {fileContent && (
@@ -89,6 +90,33 @@ function ResumeUpload() {
                     <pre className="whitespace-pre-wrap break-words text-black">{fileContent}</pre>
                 </div>
             )}
+
+            {/* added company input */}
+            <div className="mt-2">
+              <label
+                htmlFor="company"
+                className="block text-gray-700 font-medium"
+              >
+                Which company have you received the internship at?
+              </label>
+              <input
+                id="company"
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="e.g. Google, Jane Street, etc."
+                className="mt-1 p-2 border border-gray-300 rounded w-full text-black"
+              />
+
+              <button 
+                type="submit"
+                className="p-4 mb-4 text-lg text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-400"
+                onClick={(e) => console.log("button pressed")}
+              >
+                Verify
+              </button>
+
+            </div>
 
         </div>
     )
