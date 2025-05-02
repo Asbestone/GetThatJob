@@ -1,10 +1,10 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
+import NextAuth , {NextAuthOptions, Session, Account} from "next-auth";
 import LinkedInProvider from "next-auth/providers/linkedin";
-import { NextResponse } from "next/server";
+import type { JWT } from "next-auth/jwt";
 
 // 1) Configure your LinkedIn provider (make sure CLIENT_ID / SECRET are in .env)
-const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     LinkedInProvider({
       clientId: process.env.LINKEDIN_CLIENT_ID!,
@@ -16,6 +16,7 @@ const authOptions = {
       }
     })
   ],
+  
   callbacks: {
     // Persist the LinkedIn access token into the JWT
     async jwt({ token, account }) {
