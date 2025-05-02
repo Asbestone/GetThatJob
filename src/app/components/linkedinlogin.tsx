@@ -54,14 +54,16 @@ export default function LinkedinLogin() {
                 <div className="profile-data">
                 <h2>{profile.localizedFirstName} {profile.localizedLastName}</h2>
                 {profile.headline && <p><em>{profile.headline}</em></p>}
-                {profile.positions?.elements?.length > 0 && (
-                    <ul>
+                {profile.positions?.elements?.length ? (
+                <ul>
                     {profile.positions.elements.map((pos) => (
-                        <li key={pos.id || pos.title}>
+                    <li key={pos.id || pos.title}>
                         <strong>{pos.title}</strong> at {pos.company.name}
-                        </li>
+                    </li>
                     ))}
-                    </ul>
+                </ul>
+                ) : (
+                <p>No positions found.</p>
                 )}
                 </div>
             )}
