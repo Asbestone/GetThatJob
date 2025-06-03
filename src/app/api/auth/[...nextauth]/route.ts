@@ -1,5 +1,5 @@
 // File: /app/api/auth/[...nextauth]/route.ts
-import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import LinkedInProvider, { LinkedInProfile } from "next-auth/providers/linkedin";
 
 // Extend the Session type to include accessToken and idToken
