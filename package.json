@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@google/genai": "^0.8.0",
+    "@zilliz/milvus2-sdk-node": "^2.5.10",
+    "cohere-ai": "^7.17.1",
     "dotenv": "^16.5.0",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
