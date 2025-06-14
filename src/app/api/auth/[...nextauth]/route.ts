@@ -45,7 +45,6 @@ export const authOptions: NextAuthOptions = {
 
       // Map from LinkedIn’s OIDC UserInfo into NextAuth’s User shape
       profile(profile: LinkedInProfile) {
-        console.log(profile)
         return {
           id: profile.sub,
           name: profile.name,
