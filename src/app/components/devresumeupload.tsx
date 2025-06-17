@@ -213,7 +213,7 @@ function DevResumeUpload() {
 
   const compareResumes = async () => {
     if (!comparedContent) {
-      alert("Please upload and process both resumes first");
+      alert("Please upload comparison resume first");
       return;
     }
 
