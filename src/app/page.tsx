@@ -1,11 +1,9 @@
-import ResumeUpload from "./components/resumeupload";
-import CompanyDB from "./components/companydb";
-import LinkedinLogin from "./components/linkedinlogin";
+import LandingPage from "./landingpage"
 
 export default function Home() {
   return (
     <div className="w-full h-screen bg-white">
-      <LinkedinLogin />
+      <LandingPage />
     </div>
   );
 }
