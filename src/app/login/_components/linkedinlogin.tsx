@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-export default function LinkedinLogin() {
+export default function Home() {
   const { data: session, status } = useSession();
   const [meJson, setMeJson] = useState<any>(null);
   const [err, setErr] = useState<string | null>(null);
