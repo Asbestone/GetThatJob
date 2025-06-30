@@ -87,7 +87,7 @@ const Hero = ({
         icon: (
           <Image
             alt="Integration"
-            src="/company-logos/meta-logo.svg"
+            src="/company-logos/meta-logo.png"
             width={100}
             height={100}
           />
