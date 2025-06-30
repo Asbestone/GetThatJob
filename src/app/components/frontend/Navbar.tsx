@@ -28,7 +28,7 @@ const Navbar = () => {
               Log In
             </Link>
             <Button asChild size="lg" className="inline-flex">
-              <Link href="/login">Get Started</Link>
+              <Link href="/dashboard">Get Started</Link>
             </Button>
           </div>
         </div>

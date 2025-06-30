@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export default function LinkedinLogin() {
   const { data: session, status } = useSession();
   const [meJson, setMeJson] = useState<any>(null);
   const [err, setErr] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   // New state for the public URL and for the verify response
   const [profileUrl, setProfileUrl] = useState<string>(
@@ -50,7 +54,12 @@ export default function LinkedinLogin() {
   if (status === "loading") return <p>Checking auth…</p>;
   if (!session)
     return (
-      <button onClick={() => signIn("linkedin")}>
+      <button 
+        onClick={() => 
+          signIn("linkedin", {
+            // default fallback to homepage after login
+            callbackUrl: callbackUrl || "",
+          })}>
         Sign in with LinkedIn
       </button>
     );
