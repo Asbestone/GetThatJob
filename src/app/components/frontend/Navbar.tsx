@@ -65,7 +65,7 @@ const Navbar = () => {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <button
                         onClick={() => signOut()}
                         className="w-full text-left px-2 py-1.5 rounded hover:bg-muted transition"
