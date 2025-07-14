@@ -25,7 +25,6 @@ export async function POST(req: NextRequest) {
             model: "gemini-2.0-flash-lite",
             contents: featurePrompt + rawText,
         })
-
     ])
 
     //console.log(aiResponse.text);
