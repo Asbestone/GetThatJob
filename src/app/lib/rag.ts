@@ -1,14 +1,28 @@
 import { cohereService } from "./cohere";
 import { zillizService } from "./zilliz";
 import { generateAnswer } from "./gemini";
+import { GoogleGenAI } from "@google/genai"
 
-export async function runRAG(query: string, targetCompany?: string) {
+const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY})
+
+export async function runRAG(query: string) {
     const queryEmbedding = await cohereService.generateQueryEmbedding(query)
+
+    const targetCompany = "Jane Street"
+
     const similar = await zillizService.searchSimilarResumes(queryEmbedding, targetCompany, 5)
 
     const context = similar
-        .map(r => `Resume:\n${r.resume_text}\nSkills: ${r.skills.join(", ")}`)
-        .join("\n---\n")
+        .map(r => {
+            let skills: string[] = [];
+            try {
+                skills = Array.isArray(r.skills) ? r.skills : JSON.parse(r.skills || "[]");
+            } catch (e) {
+                console.warn("Failed to parse skills for resume", r.id, r.skills);
+            }
+            return `Resume:\n${r.resume_text}\nSkills: ${skills.join(", ")}`;
+        })
+        .join("\n---\n");
 
     let answer: string
     try {

@@ -104,7 +104,7 @@ export default async function Home() {
                     <h2 className="text-2xl font-semibold text-black mb-4">
                         Upload & Process Resume
                     </h2>
-                    <ResumeUpload />
+                    <DevResumeUpload />
                 </div>
 
                 {/* Vector Management Section */}

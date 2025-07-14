@@ -7,8 +7,11 @@ export default function ChatBox() {
     const [answer, setAnswer] = useState("");
 
     const ask = async () => {
-        const res = await fetch("/api/rag", {
+        const res = await fetch("/api/chat", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({ query }),
         });
         const data = await res.json();
