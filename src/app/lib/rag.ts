@@ -10,7 +10,13 @@ export async function runRAG(query: string, targetCompany?: string) {
         .map(r => `Resume:\n${r.resume_text}\nSkills: ${r.skills.join(", ")}`)
         .join("\n---\n")
 
-    const answer = await generateAnswer(context, query)
+    let answer: string
+    try {
+        answer = await generateAnswer(context, query)
+    } catch (error) {
+        console.error("Failed to generate answer:", error)
+        answer = "Sorry, I couldn't generate an answer at this time."
+    }
 
     return {
         results: similar,
