@@ -318,6 +318,25 @@ export class ZillizService {
       throw error;
     }
   }
+
+  async getCompanies(): Promise<string[]> {
+    try {
+      const results = await this.client.query({
+        collection_name: COLLECTION_NAME,
+        output_fields: ["target_company"],
+        filter: 'target_company != ""',
+      })
+
+      const rawCompanies = (results.data || []).map((row: any) => row.target_company)
+      
+      //deduplicate and return
+      const distinctCompanies = [...new Set(rawCompanies)].filter(Boolean)
+      return distinctCompanies
+    } catch (error) {
+      console.error("Error fetching distinct companies: ", error)
+      throw error;
+    }
+  }
 }
 
 export const zillizService = new ZillizService();

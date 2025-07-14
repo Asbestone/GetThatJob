@@ -1,14 +1,11 @@
 import { cohereService } from "./cohere";
 import { zillizService } from "./zilliz";
-import { generateAnswer } from "./gemini";
-import { GoogleGenAI } from "@google/genai"
-
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY})
+import { generateAnswer, extractCompany } from "./gemini";
 
 export async function runRAG(query: string) {
     const queryEmbedding = await cohereService.generateQueryEmbedding(query)
 
-    const targetCompany = "Jane Street"
+    const targetCompany = await extractCompany(query);
 
     const similar = await zillizService.searchSimilarResumes(queryEmbedding, targetCompany, 5)
 
