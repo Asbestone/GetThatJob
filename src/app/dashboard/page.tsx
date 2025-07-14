@@ -6,6 +6,7 @@ import ResumeUpload from "./_components/resumeupload";
 import CompanyDB from "./_components/companydb";
 import ResumeVectorManager from "./_components/resumevectormanager";
 import DevResumeUpload from "./_components/devresumeupload";
+import ChatBox from "./_components/chatbox";
 
 const DEV_MODE = false;
 
@@ -115,6 +116,12 @@ export default async function Home() {
                 <div className="mb-8">
                     <CompanyDB />
                 </div>
+
+                {/* RAG Chat Interface */}
+                <div className="mb-8">
+                    <ChatBox />
+                </div>
+
             </div>
         </div>
     );
