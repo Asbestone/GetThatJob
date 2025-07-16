@@ -2,13 +2,7 @@
 
 import React, { useState } from 'react';
 
-const companies = [
-  'Google', 'Apple', 'Amazon', 'Microsoft', 'Meta',
-  'Intel', 'Nvidia', 'IBM', 'Oracle', 'Salesforce',
-  'Jane Street', 'Two Sigma', 'Citadel', 'Hudson River Trading'
-];
-
-export default function CompanyDB() {
+export default function CompanyDB({ companies }: { companies: string[] }) {
   const [showModal, setShowModal] = useState(false);
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
