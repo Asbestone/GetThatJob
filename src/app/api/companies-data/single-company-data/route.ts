@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
     try {
         // delay fetching data
-        //await new Promise(resolve => setTimeout(resolve, 800))
+       // await new Promise(resolve => setTimeout(resolve, 8000))
 
         const insights = `
         Detailed insights for ${decodeURIComponent(companyName)}:
