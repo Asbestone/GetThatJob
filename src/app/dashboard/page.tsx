@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import { zillizService } from "../lib/zilliz";
 
 import CompanyDB from "./_components/companydb";
 import ResumeVectorManager from "./_components/resumevectormanager";
@@ -9,7 +8,6 @@ import DevResumeUpload from "./_components/devresumeupload";
 import ChatBox from "./_components/chatbox";
 
 const DEV_MODE = false;
-const companies = await zillizService.getCompanies()
 
 //server component so can use async and await
 export default async function Home() {
@@ -115,7 +113,7 @@ export default async function Home() {
 
                 {/* Company Database Section */}
                 <div className="mb-8">
-                    <CompanyDB companies={companies} />
+                    <CompanyDB />
                 </div>
 
                 {/* RAG Chat Interface */}
