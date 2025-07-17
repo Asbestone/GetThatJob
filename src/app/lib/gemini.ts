@@ -15,7 +15,10 @@ export async function generateAnswer(context: string, query: string): Promise<st
         User Question:
         ${query}
 
-        Answer based only on the context above.
+        Answer normally, but based only on the context above.
+        Don't mention filler sentences about the context in your reponse.
+        Example: "Based on the provided context...". DO NOT DO THIS.
+        Just answer like a regular LLM, but based on the context.
     `
 
     const [result] = await Promise.all([
