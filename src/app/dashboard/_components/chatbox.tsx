@@ -27,7 +27,7 @@ export default function ChatBox() {
 
     useEffect(() => {
         if (currentCompany !== undefined && messages.length > 0) {
-            setMessages(messages.slice(-2)) // keep last two messages
+            //setMessages(messages.slice(-2)) // keep last two messages
             setDisplayWarning(null)
         }
     }, [currentCompany])
