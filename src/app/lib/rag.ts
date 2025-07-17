@@ -44,6 +44,9 @@ export async function runRAG(query: string, chatHistory: string = "") {
         Prompt:
         ${prompt}`
 
+    console.log("CHATHISTORY")
+    console.log(chatHistory, '\n')
+
     if (fullContext.length > MAX_CONTEXT_WINDOW) {
         console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${fullContext.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
         throw new Error(`Chat context window limit exceeded (${MAX_CONTEXT_WINDOW} characters). Please refresh chat to start a new conversation.`)
@@ -60,5 +63,6 @@ export async function runRAG(query: string, chatHistory: string = "") {
     return {
         results: similar,
         answer,
+        targetCompany
     }
 }

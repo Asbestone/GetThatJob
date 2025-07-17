@@ -6,8 +6,8 @@ import { zillizService } from "./zilliz"
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API})
 
 export async function generateAnswer(context: string): Promise<string> {
-    console.log("gemini endpoint hit")
-    console.log(context)
+    //console.log("gemini endpoint hit")
+    //console.log(context)
     const [result] = await Promise.all([
         ai.models.generateContent({
             model: "gemini-2.0-flash-lite",
@@ -24,7 +24,7 @@ export async function extractCompany(query: string): Promise<string | undefined>
 
     const companies = await zillizService.getCompanies()
     const companiesString = companies.join(", ")
-    console.log(companiesString)
+    //console.log(companiesString)
 
     const prompt = `${promptTemplate}
         Companies:\n

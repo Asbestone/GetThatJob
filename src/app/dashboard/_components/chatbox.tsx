@@ -17,12 +17,20 @@ export default function ChatBox() {
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [isSending, setIsSending] = useState(false)
     const [displayWarning, setDisplayWarning] = useState<string|null>(null)
+    const [currentCompany, setCurrentCompany] = useState<string|undefined>(undefined)
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
+
+    useEffect(() => {
+        if (currentCompany !== undefined && messages.length > 0) {
+            setMessages(messages.slice(-2)) // keep last two messages
+            setDisplayWarning(null)
+        }
+    }, [currentCompany])
 
     const resetChat = () => {
         setMessages([])
@@ -47,7 +55,7 @@ export default function ChatBox() {
 
         const chatHistory = messages
             .filter((msg) => msg.sender === "user" || msg.sender === "ai")
-            .slice(-5) // last 5 messages as part of convo history
+            //.slice(-5) // last 5 messages as part of convo history
             .map((msg) => {
                 if (msg.sender == "user") return `User: ${msg.text}`
                 if (msg.sender == "ai") return `AI: ${msg.text}`
@@ -84,6 +92,8 @@ export default function ChatBox() {
             }
 
             setMessages((prevMessages) => [...prevMessages, aiMessage])
+            setCurrentCompany(data.targetCompany)
+
         } catch (error: any) {
             console.error("❌ Chat error:", error)
             const errorMessageText = error.message
