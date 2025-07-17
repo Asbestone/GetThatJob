@@ -5,31 +5,16 @@ import { zillizService } from "./zilliz"
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API})
 
-export async function generateAnswer(context: string, query: string): Promise<string> {
-    //console.log("gemini endpoint hit")
-    const responsePath = path.join(process.cwd(), 'src', 'app', 'prompts', 'generate-answer.txt')
-    const responsePrompt = fs.readFileSync(responsePath, 'utf8')
-
-    const prompt = `
-        Context:
-        ${context}
-
-        User Question:
-        ${query}
-
-        Prompt:
-        ${responsePrompt}
-    `
-
+export async function generateAnswer(context: string): Promise<string> {
+    console.log("gemini endpoint hit")
+    console.log(context)
     const [result] = await Promise.all([
         ai.models.generateContent({
             model: "gemini-2.0-flash-lite",
-            contents: prompt
+            contents: context
         })
     ])
-
     //console.log(result)
-
     return result.text ?? ""
 }
 
@@ -47,14 +32,9 @@ export async function extractCompany(query: string): Promise<string | undefined>
         Query:\n
         ${query}`
 
-    const [response] = await Promise.all([
-        ai.models.generateContent({
-            model: "gemini-2.0-flash-lite",
-            contents: prompt
-        })
-    ])
+    const response = await generateAnswer(prompt)
 
-    let company: string | undefined = response.text ? response.text.trim() : "__NONE__";
+    let company: string | undefined = response ? response.trim() : "__NONE__";
     if (company === "__NONE__") company = undefined
 
     return company

@@ -1,8 +1,8 @@
 import { cohereService } from "./cohere";
 import { zillizService } from "./zilliz";
 import { generateAnswer, extractCompany } from "./gemini";
+import fs from "fs";
 import path from "path";
-import fs from "fs"
 
 const MAX_CONTEXT_WINDOW = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
 
@@ -25,28 +25,33 @@ export async function runRAG(query: string, chatHistory: string = "") {
         })
         .join("\n---\n")
 
+    const promptPath = path.join(process.cwd(), 'src', 'app', 'prompts', 'generate-answer.txt')
+    const prompt = fs.readFileSync(promptPath, 'utf8')
 
-    const fullPromptContext = `
+    const fullContext = `
         Conversation History:
-        ${chatHistory}
+        ${chatHistory}\n
 
         Retrieved Context:
-        ${context}
+        ${context}\n
 
-        Company for which the context resumes are benchmarks:
-        ${targetCompany}
+        Target Company:
+        ${targetCompany ? targetCompany : "No company"}\n
 
         User's Question:
-        ${query}`
+        ${query}\n
+        
+        Prompt:
+        ${prompt}`
 
-    if (fullPromptContext.length > MAX_CONTEXT_WINDOW) {
-        console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${fullPromptContext.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
+    if (fullContext.length > MAX_CONTEXT_WINDOW) {
+        console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${fullContext.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
         throw new Error(`Chat context window limit exceeded (${MAX_CONTEXT_WINDOW} characters). Please refresh chat to start a new conversation.`)
     }
 
     let answer: string
     try {
-        answer = await generateAnswer(context, query)
+        answer = await generateAnswer(fullContext)
     } catch (error) {
         console.error("Failed to generate answer:", error)
         answer = "Sorry, I couldn't generate an answer at this time."
