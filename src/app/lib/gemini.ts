@@ -7,6 +7,8 @@ const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API})
 
 export async function generateAnswer(context: string, query: string): Promise<string> {
     //console.log("gemini endpoint hit")
+    const responsePath = path.join(process.cwd(), 'src', 'app', 'prompts', 'generate-answer.txt')
+    const responsePrompt = fs.readFileSync(responsePath, 'utf8')
 
     const prompt = `
         Context:
@@ -15,10 +17,8 @@ export async function generateAnswer(context: string, query: string): Promise<st
         User Question:
         ${query}
 
-        Answer normally, but based only on the context above.
-        Don't mention filler sentences about the context in your reponse.
-        Example: "Based on the provided context...". DO NOT DO THIS.
-        Just answer like a regular LLM, but based on the context.
+        Prompt:
+        ${responsePrompt}
     `
 
     const [result] = await Promise.all([

@@ -1,6 +1,8 @@
 import { cohereService } from "./cohere";
 import { zillizService } from "./zilliz";
 import { generateAnswer, extractCompany } from "./gemini";
+import path from "path";
+import fs from "fs"
 
 const MAX_CONTEXT_WINDOW = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
 
@@ -21,20 +23,21 @@ export async function runRAG(query: string, chatHistory: string = "") {
             }
             return `Resume:\n${r.resume_text}\nSkills: ${skills.join(", ")}`;
         })
-        .join("\n---\n");
+        .join("\n---\n")
+
 
     const fullPromptContext = `
         Conversation History:
         ${chatHistory}
 
-        Retrieved Relevant Context:
+        Retrieved Context:
         ${context}
 
-        User's Current Question:
-        ${query}
+        Company for which the context resumes are benchmarks:
+        ${targetCompany}
 
-        Based on the above conversation history and provided context, answer the user's current question.
-        If the relevant information is not in the provided contexts, state that you don't have enough information.`
+        User's Question:
+        ${query}`
 
     if (fullPromptContext.length > MAX_CONTEXT_WINDOW) {
         console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${fullPromptContext.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
