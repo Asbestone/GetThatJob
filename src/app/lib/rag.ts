@@ -8,7 +8,7 @@ import path from "path";
 const MAX_CONTEXT_WINDOW = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
 
 // Simple in-memory session store for model history
-// In production, you'd want to use Redis or a database
+// In production, we use Redis or a database
 const sessionStore = new Map<string, Content[]>();
 
 // Generate session ID (you can pass this from frontend or generate based on user ID)
@@ -38,19 +38,16 @@ export async function runRAG(query: string, chatHistory: Content[], sessionId?: 
     const promptPath = path.join(process.cwd(), 'src', 'app', 'prompts', 'generate-answer.txt')
     const prompt = fs.readFileSync(promptPath, 'utf8')
 
-    // HANDLING CHAT SESSION
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API })
-    
     // Get or create session ID
     const currentSessionId = sessionId || generateSessionId();
     
-    // Get existing model history from session store
-    let modelHistory = sessionStore.get(currentSessionId) || [];
+    // Get existing model history from session store for the LLM
+    let modelHistoryForLLM = sessionStore.get(currentSessionId) || [];
     
-    // Initialize session if it's empty
-    if (modelHistory.length === 0) {
-        modelHistory = [
+    // If it's a new session for the LLM (modelHistoryForLLM is empty),
+    // initialize it with the system prompt and the AI's initial greeting.
+    if (modelHistoryForLLM.length === 0) {
+        modelHistoryForLLM = [
             {
                 role: "user",
                 parts: [{ text: prompt }]
@@ -62,15 +59,17 @@ export async function runRAG(query: string, chatHistory: Content[], sessionId?: 
         ];
     }
 
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API })
+    
     const chat = ai.chats.create({
         model: "gemini-2.0-flash-lite",
-        history: modelHistory,
+        history: modelHistoryForLLM, // Use the history from the session store for the LLM
         config: {
             maxOutputTokens: 500
         }
     })
 
-    // Prepare the current user message with context
+    // Prepare the current user message with context (this goes to the model only)
     let userMessageWithContext = `
         Retrieved Context:
         ${context}
@@ -106,25 +105,60 @@ export async function runRAG(query: string, chatHistory: Content[], sessionId?: 
         
     } catch (error) {
         console.error("Failed to generate answer:", error)
-        answer = "Sorry, I couldn't generate an answer at this time."
+        answer = "Sorry, I couldn't generate an answer based on the available data."
     }
 
     console.log("Current user message with context:", userMessageWithContext)
     console.log("Session ID:", currentSessionId)
 
-    // FILTERING HISTORY FOR CLIENT
-    // Build the client history by taking the existing chatHistory and adding the new exchange
+    // --- START FIX: Ensure all messages in clientDisplayHistory have unique IDs ---
+    interface ClientChatMessage {
+        id: string;
+        role: "user" | "model" | "system";
+        parts: { text: string }[];
+    }
 
-    const clientDisplayHistory: Content[] = [...chatHistory]; // Start with existing clean history
+    const clientDisplayHistory: ClientChatMessage[] = [];
 
-    // Add the current user message (clean, without context)
+    // Add the initial AI greeting to client history if it's the very first turn.
+    // This is for display purposes only, not part of LLM's direct history.
+    if (chatHistory.length === 0) {
+        clientDisplayHistory.push({
+            id: "initial-greeting", // This ID is already handled in ChatBox.tsx
+            role: "model",
+            parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
+        });
+    }
+
+    // Process existing chat history from the client (Content[] type)
+    // Convert each Content to ClientChatMessage by assigning a unique ID.
+    chatHistory.forEach((msg, index) => {
+        // Generate a stable ID for historical messages.
+        // Using a combination of index, role, and a snippet of text for better uniqueness.
+        const textSnippet =
+            Array.isArray(msg.parts) && msg.parts.length > 0 && typeof msg.parts[0]?.text === "string"
+                ? msg.parts[0].text.substring(0, 15).replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
+                : Date.now().toString();
+        const historicalId = `hist-${msg.role}-${index}-${textSnippet}`;
+        clientDisplayHistory.push({
+            id: historicalId,
+            role: msg.role as ClientChatMessage["role"], // Cast to ensure type compatibility
+            parts: (msg.parts ?? []).map(part => ({ text: part.text || '' })) // Ensure parts have text property
+        });
+    });
+
+    // Add the current user message and AI's response with unique IDs
+    const userMessageId = `user-${Date.now()}`;
+    const modelResponseId = `model-${Date.now() + 1}`; // Ensure it's different from user message ID
+
     clientDisplayHistory.push({
+        id: userMessageId, // Assign unique ID
         role: "user",
         parts: [{ text: query }]
     });
 
-    // Add the AI's response
     clientDisplayHistory.push({
+        id: modelResponseId, // Assign unique ID
         role: "model",
         parts: [{ text: answer }]
     });
