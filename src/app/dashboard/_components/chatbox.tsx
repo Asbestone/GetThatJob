@@ -26,6 +26,18 @@ export default function ChatBox() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        if (messages.length === 0 && !isSending) {
+            setMessages([
+                {
+                    id: "initial-greeting",
+                    role: "model",
+                    parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
+                }
+            ])
+        }
+    }, []) // just run once on mount
+
+    useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
@@ -37,7 +49,13 @@ export default function ChatBox() {
     }, [currentCompany])
 
     const resetChat = () => {
-        setMessages([])
+        setMessages([
+            {
+                id: "initial-greeting",
+                role: "model",
+                parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
+            }
+        ])
         setQuery("")
         setDisplayWarning(null)
     }
@@ -46,18 +64,17 @@ export default function ChatBox() {
         if (!query.trim() || isSending) return
 
         const userMessageText = query.trim()
-        const userMessage: ChatMessage = {
-            id: Date.now().toString(),
-            role: "user",
-            parts: [{ text: userMessageText }]
-        }
-
-        setMessages((prevMessages) => [...prevMessages, userMessage])
+        
+        // Don't add the user message to state yet - let the backend handle the complete history
         setQuery("")
         setIsSending(true)
         setDisplayWarning(null)
 
-        const chatHistory: ChatMessage[] = [...messages, userMessage]
+        // Only send user and model messages visible to client (exclude the initial greeting)
+        const chatHistory = messages.filter(msg => 
+            msg.role !== 'system' && 
+            msg.id !== 'initial-greeting' // Don't send the initial greeting back to server
+        )
 
         const contextLength = JSON.stringify(chatHistory).length + userMessageText.length
         
@@ -83,11 +100,23 @@ export default function ChatBox() {
 
             const data = await response.json()
 
-            // The backend returns the full updated history, including the system message.
-            // Filter out the system message for display if desired, or display it.
-            // For now, setting all messages from backend directly.
+            // The backend returns the complete updated history including the new user message and AI response
+            // We need to prepend the initial greeting if this was the first message
+            let updatedHistory = data.updatedChatHistory;
+            
+            // If the chat history was empty before (only had initial greeting), add it back
+            if (chatHistory.length === 0) {
+                updatedHistory = [
+                    {
+                        id: "initial-greeting",
+                        role: "model",
+                        parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
+                    },
+                    ...updatedHistory
+                ];
+            }
 
-            setMessages(data.updatedChatHistory)
+            setMessages(updatedHistory)
             setCurrentCompany(data.targetCompany)
 
         } catch (error: any) {
@@ -100,7 +129,14 @@ export default function ChatBox() {
                 parts: [{ text: `Error: ${errorMessageText}` }],
             }
 
-            setMessages((prevMessages) => [...prevMessages, errorMessage])
+            // Add the user message and error message to current state
+            const userMessage: ChatMessage = {
+                id: Date.now().toString(),
+                role: "user",
+                parts: [{ text: userMessageText }]
+            }
+
+            setMessages((prevMessages) => [...prevMessages, userMessage, errorMessage])
             setDisplayWarning(`Server Error: ${errorMessageText} 🚨`)
         } finally {
             setIsSending(false)
@@ -113,10 +149,7 @@ export default function ChatBox() {
 
             {/* Chat History Display */}
             <div className="flex-1 overflow-y-auto border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                {messages.length === 0 && !isSending && (
-                    <p className="text-gray-500 text-center">Start a conversation by typing a message below.</p>
-                )}
-
+                
                 {messages.map((msg) => {
                     // optionally skip rendering 'system' role messages 
                     if (msg.role === 'system') return null;
