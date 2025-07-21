@@ -7,7 +7,16 @@ import path from "path";
 
 const MAX_CONTEXT_WINDOW = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
 
-export async function runRAG(query: string, chatHistory: Content[]) {
+// Simple in-memory session store for model history
+// In production, you'd want to use Redis or a database
+const sessionStore = new Map<string, Content[]>();
+
+// Generate session ID (you can pass this from frontend or generate based on user ID)
+function generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+export async function runRAG(query: string, chatHistory: Content[], sessionId?: string) {
     const queryEmbedding = await cohereService.generateQueryEmbedding(query)
 
     const targetCompany = await extractCompany(query);
@@ -33,24 +42,24 @@ export async function runRAG(query: string, chatHistory: Content[]) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API })
     
-    // Build the complete model history
-    let modelHistory: Content[] = [];
+    // Get or create session ID
+    const currentSessionId = sessionId || generateSessionId();
     
-    // Always start with the system prompt as the first user message
-    modelHistory.push({
-        role: "user",
-        parts: [{ text: prompt }]
-    });
+    // Get existing model history from session store
+    let modelHistory = sessionStore.get(currentSessionId) || [];
     
-    // Add the AI's greeting response (this is hidden from user but needed for model consistency)
-    modelHistory.push({
-        role: "model",
-        parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
-    });
-    
-    // Add the existing chat history (if any) - these are the actual user-model exchanges
-    if (chatHistory.length > 0) {
-        modelHistory.push(...chatHistory);
+    // Initialize session if it's empty
+    if (modelHistory.length === 0) {
+        modelHistory = [
+            {
+                role: "user",
+                parts: [{ text: prompt }]
+            },
+            {
+                role: "model",
+                parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
+            }
+        ];
     }
 
     const chat = ai.chats.create({
@@ -61,7 +70,7 @@ export async function runRAG(query: string, chatHistory: Content[]) {
         }
     })
 
-    // Prepare the current user message with context (this goes to the model only)
+    // Prepare the current user message with context
     let userMessageWithContext = `
         Retrieved Context:
         ${context}
@@ -82,17 +91,31 @@ export async function runRAG(query: string, chatHistory: Content[]) {
     try {
         const response = await chat.sendMessage({ message: userMessageWithContext })
         answer = response.text ?? "Sorry, I couldn't generate an answer at this time."
+        
+        // Update the session store with the new model history (includes context)
+        const updatedModelHistory = chat.getHistory();
+        sessionStore.set(currentSessionId, updatedModelHistory);
+        
+        // Clean up old sessions (simple cleanup - keep last 100 sessions)
+        if (sessionStore.size > 100) {
+            const oldestKey = sessionStore.keys().next().value;
+            if (typeof oldestKey === "string") {
+                sessionStore.delete(oldestKey);
+            }
+        }
+        
     } catch (error) {
         console.error("Failed to generate answer:", error)
         answer = "Sorry, I couldn't generate an answer at this time."
     }
 
-    console.log(userMessageWithContext)
+    console.log("Current user message with context:", userMessageWithContext)
+    console.log("Session ID:", currentSessionId)
 
     // FILTERING HISTORY FOR CLIENT
     // Build the client history by taking the existing chatHistory and adding the new exchange
 
-    const clientDisplayHistory: Content[] = [...chatHistory]; // Start with existing history
+    const clientDisplayHistory: Content[] = [...chatHistory]; // Start with existing clean history
 
     // Add the current user message (clean, without context)
     clientDisplayHistory.push({
@@ -110,6 +133,12 @@ export async function runRAG(query: string, chatHistory: Content[]) {
         results: similar,
         answer,
         targetCompany,
-        updatedChatHistory: clientDisplayHistory
+        updatedChatHistory: clientDisplayHistory,
+        sessionId: currentSessionId // Return session ID to frontend
     }
+}
+
+// Function to clear a specific session
+export function clearSession(sessionId: string) {
+    sessionStore.delete(sessionId);
 }

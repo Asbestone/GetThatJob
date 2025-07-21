@@ -1,22 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runRAG } from "@/app/lib/rag";
+import { runRAG, clearSession } from "@/app/lib/rag";
 import type { Content } from "@google/genai";
 
 export async function POST(req: NextRequest) {
     try {
-        const { query, chatHistory } = await req.json()
+        const { query, chatHistory, sessionId, action } = await req.json()
+
+        // Handle session clearing
+        if (action === "clearSession" && sessionId) {
+            clearSession(sessionId);
+            return NextResponse.json({ success: true, message: "Session cleared" });
+        }
 
         if (!query?.trim()) {
             return NextResponse.json({ error: "Missing query" }, { status: 400 })
         }
         
-        const parsedChatHistory: Content[] = chatHistory
-        const ragResult = await runRAG(query.trim(), parsedChatHistory)
+        const parsedChatHistory: Content[] = chatHistory || []
+        const ragResult = await runRAG(query.trim(), parsedChatHistory, sessionId)
         
         return NextResponse.json({
             answer: ragResult.answer,
             targetCompany: ragResult.targetCompany,
-            updatedChatHistory: ragResult.updatedChatHistory
+            updatedChatHistory: ragResult.updatedChatHistory,
+            sessionId: ragResult.sessionId
         })
 
     } catch (error: any) {
@@ -35,5 +42,4 @@ export async function POST(req: NextRequest) {
         )
 
     }
-    
 }

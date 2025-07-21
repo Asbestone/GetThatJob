@@ -22,6 +22,7 @@ export default function ChatBox() {
     const [isSending, setIsSending] = useState(false)
     const [displayWarning, setDisplayWarning] = useState<string|null>(null)
     const [currentCompany, setCurrentCompany] = useState<string|undefined>(undefined)
+    const [sessionId, setSessionId] = useState<string|undefined>(undefined)
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -48,7 +49,22 @@ export default function ChatBox() {
         }
     }, [currentCompany])
 
-    const resetChat = () => {
+    const resetChat = async () => {
+        // Clear session on server if we have a sessionId
+        if (sessionId) {
+            try {
+                await fetch("api/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ action: "clearSession", sessionId })
+                });
+            } catch (error) {
+                console.warn("Failed to clear session:", error);
+            }
+        }
+
         setMessages([
             {
                 id: "initial-greeting",
@@ -58,6 +74,7 @@ export default function ChatBox() {
         ])
         setQuery("")
         setDisplayWarning(null)
+        setSessionId(undefined)
     }
 
     const ask = async () => {
@@ -90,7 +107,7 @@ export default function ChatBox() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ query: userMessageText, chatHistory: chatHistory})
+                body: JSON.stringify({ query: userMessageText, chatHistory: chatHistory, sessionId })
             })
 
             if (!response.ok) {
@@ -118,6 +135,7 @@ export default function ChatBox() {
 
             setMessages(updatedHistory)
             setCurrentCompany(data.targetCompany)
+            setSessionId(data.sessionId) // Store session ID
 
         } catch (error: any) {
             console.error("❌ Chat error:", error)
