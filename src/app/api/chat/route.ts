@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runRAG } from "@/app/lib/rag";
+import type { Content } from "@google/genai";
 
 export async function POST(req: NextRequest) {
     try {
@@ -8,9 +9,15 @@ export async function POST(req: NextRequest) {
         if (!query?.trim()) {
             return NextResponse.json({ error: "Missing query" }, { status: 400 })
         }
-
-        const ragResult = await runRAG(query.trim(), chatHistory)
-        return NextResponse.json(ragResult)
+        
+        const parsedChatHistory: Content[] = chatHistory
+        const ragResult = await runRAG(query.trim(), parsedChatHistory)
+        
+        return NextResponse.json({
+            answer: ragResult.answer,
+            targetCompany: ragResult.targetCompany,
+            updatedChatHistory: ragResult.updatedChatHistory
+        })
 
     } catch (error: any) {
         console.error("❌ Chat API error:", error)

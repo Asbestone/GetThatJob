@@ -4,10 +4,14 @@ import { useRef, useState, useEffect } from "react";
 import { Input } from "@/app/components/frontend/ui/input";
 import { Button } from "@/app/components/frontend/ui/button";
 
+interface ChatMessagePart {
+    text: string;
+}
+
 interface ChatMessage {
     id: string;
-    sender: "user" | "ai";
-    text: string;
+    role: "user" | "model" | "system";
+    parts: ChatMessagePart[];
 }
 
 const CLIENT_CONTEXT_WINDOW_SOFT_LIMIT = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
@@ -44,8 +48,8 @@ export default function ChatBox() {
         const userMessageText = query.trim()
         const userMessage: ChatMessage = {
             id: Date.now().toString(),
-            sender: "user",
-            text: userMessageText
+            role: "user",
+            parts: [{ text: userMessageText }]
         }
 
         setMessages((prevMessages) => [...prevMessages, userMessage])
@@ -53,17 +57,10 @@ export default function ChatBox() {
         setIsSending(true)
         setDisplayWarning(null)
 
-        const chatHistory = messages
-            .filter((msg) => msg.sender === "user" || msg.sender === "ai")
-            //.slice(-5) // last 5 messages as part of convo history
-            .map((msg) => {
-                if (msg.sender == "user") return `User: ${msg.text}`
-                if (msg.sender == "ai") return `AI: ${msg.text}`
-                return ""
-            })
-            .join("\n")
+        const chatHistory: ChatMessage[] = [...messages, userMessage]
 
-        const contextLength = chatHistory.length + userMessageText.length
+        const contextLength = JSON.stringify(chatHistory).length + userMessageText.length
+        
         if (contextLength > CLIENT_CONTEXT_WINDOW_SOFT_LIMIT) {
             setDisplayWarning(
                 `Heads up! Your message history is getting long. You might hit the server's context limit. Consider clearing the chat. 🟠`
@@ -85,13 +82,12 @@ export default function ChatBox() {
             }
 
             const data = await response.json()
-            const aiMessage: ChatMessage = {
-                id: (Date.now() + 1).toString(),
-                sender: "ai",
-                text: data.answer || "Sorry, I couldn't generate a response.",
-            }
 
-            setMessages((prevMessages) => [...prevMessages, aiMessage])
+            // The backend returns the full updated history, including the system message.
+            // Filter out the system message for display if desired, or display it.
+            // For now, setting all messages from backend directly.
+
+            setMessages(data.updatedChatHistory)
             setCurrentCompany(data.targetCompany)
 
         } catch (error: any) {
@@ -100,8 +96,8 @@ export default function ChatBox() {
 
             const errorMessage: ChatMessage = {
                 id: (Date.now() + 2).toString(),
-                sender: "ai",
-                text: `Error: ${errorMessageText}`,
+                role: "model",
+                parts: [{ text: `Error: ${errorMessageText}` }],
             }
 
             setMessages((prevMessages) => [...prevMessages, errorMessage])
@@ -120,24 +116,33 @@ export default function ChatBox() {
                 {messages.length === 0 && !isSending && (
                     <p className="text-gray-500 text-center">Start a conversation by typing a message below.</p>
                 )}
-                {messages.map((msg) => (
-                    <div
-                        key={msg.id}
-                        className={`flex ${
-                        msg.sender === "user" ? "justify-end" : "justify-start"
-                        }`}
-                    >
+
+                {messages.map((msg) => {
+                    // optionally skip rendering 'system' role messages 
+                    if (msg.role === 'system') return null;
+
+                    return (
                         <div
-                            className={`p-3 rounded-lg max-w-[80%] ${
-                                msg.sender === "user"
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-200 text-gray-800"
+                            key={msg.id}
+                            className={`flex ${
+                            msg.role === "user" ? "justify-end" : "justify-start"
                             }`}
                         >
-                            {msg.text}
+                            <div
+                                className={`p-3 rounded-lg max-w-[80%] ${
+                                    msg.role === "user"
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-gray-200 text-gray-800"
+                                }`}
+                            >
+                                {msg.parts.map((part, partIndex) => (
+                                    <span key={partIndex}>{part.text}</span>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
+
                 {isSending && (
                 <div className="flex justify-start">
                     <div className="p-3 rounded-lg bg-gray-200 text-gray-800">

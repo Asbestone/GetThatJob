@@ -1,12 +1,13 @@
 import { cohereService } from "./cohere";
 import { zillizService } from "./zilliz";
-import { generateAnswer, extractCompany } from "./gemini";
+import { extractCompany } from "./gemini";
+import { GoogleGenAI, Content } from "@google/genai";
 import fs from "fs";
 import path from "path";
 
 const MAX_CONTEXT_WINDOW = parseInt(process.env.MAX_CONTEXT_WINDOW || "5000")
 
-export async function runRAG(query: string, chatHistory: string = "") {
+export async function runRAG(query: string, chatHistory: Content[]) {
     const queryEmbedding = await cohereService.generateQueryEmbedding(query)
 
     const targetCompany = await extractCompany(query);
@@ -28,10 +29,19 @@ export async function runRAG(query: string, chatHistory: string = "") {
     const promptPath = path.join(process.cwd(), 'src', 'app', 'prompts', 'generate-answer.txt')
     const prompt = fs.readFileSync(promptPath, 'utf8')
 
-    const fullContext = `
-        Conversation History:
-        ${chatHistory}\n
 
+    // HANDLING CHAT SESSION
+
+    const initialHistory: Content[] = [{ role: "system", parts: [{ text: prompt }]}]
+    const fullHistory = initialHistory.concat(chatHistory)
+
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API })
+    const chat = ai.chats.create({
+        model: "gemini-2.0-flash-lite",
+        history: fullHistory
+    })
+
+    const userMessage = `
         Retrieved Context:
         ${context}\n
 
@@ -39,30 +49,30 @@ export async function runRAG(query: string, chatHistory: string = "") {
         ${targetCompany ? targetCompany : "No company"}\n
 
         User's Question:
-        ${query}\n
-        
-        Prompt:
-        ${prompt}`
+        ${query}\n`
 
-    console.log("CHATHISTORY")
-    console.log(chatHistory, '\n')
 
-    if (fullContext.length > MAX_CONTEXT_WINDOW) {
-        console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${fullContext.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
+    if (userMessage.length > MAX_CONTEXT_WINDOW) {
+        console.warn(`Server: Context window limit exceeded! Request rejected. Length: ${userMessage.length}. Limit: ${MAX_CONTEXT_WINDOW}`)
         throw new Error(`Chat context window limit exceeded (${MAX_CONTEXT_WINDOW} characters). Please refresh chat to start a new conversation.`)
     }
 
     let answer: string
     try {
-        answer = await generateAnswer(fullContext)
+        const response = await chat.sendMessage({ message: userMessage })
+        answer = response.text ?? "Sorry, I couldn't generate an answer at this time."
     } catch (error) {
         console.error("Failed to generate answer:", error)
         answer = "Sorry, I couldn't generate an answer at this time."
     }
 
+    console.log("CHATHISTORY")
+    console.log(chat.getHistory())
+
     return {
         results: similar,
         answer,
-        targetCompany
+        targetCompany,
+        updatedChatHistory: chat.getHistory()
     }
 }
