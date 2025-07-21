@@ -44,7 +44,6 @@ export default function ChatBox() {
 
     useEffect(() => {
         if (currentCompany !== undefined && messages.length > 0) {
-            //setMessages(messages.slice(-2)) // keep last two messages
             setDisplayWarning(null)
         }
     }, [currentCompany])
@@ -82,18 +81,35 @@ export default function ChatBox() {
 
         const userMessageText = query.trim()
         
-        // Don't add the user message to state yet - let the backend handle the complete history
+        // --- START FIX ---
+        // 1. Create the user message object
+        const userMessage: ChatMessage = {
+            id: Date.now().toString(),
+            role: "user",
+            parts: [{ text: userMessageText }]
+        }
+
+        // 2. Add the user message to the state IMMEDIATELY for instant display
+        setMessages((prevMessages) => [...prevMessages, userMessage])
+        // --- END FIX ---
+
         setQuery("")
         setIsSending(true)
         setDisplayWarning(null)
 
-        // Only send user and model messages visible to client (exclude the initial greeting)
-        const chatHistory = messages.filter(msg => 
+        // --- START FIX ---
+        // 3. Prepare chatHistory for server:
+        //    - Filter out 'system' roles and the 'initial-greeting' message.
+        //    - IMPORTANT: DO NOT include the `userMessage` created above in this `chatHistoryForServer`.
+        //      The current user's query is sent via the `query` parameter, and `rag.ts` handles it.
+        //      `chatHistory` here is strictly for *past* conversational turns.
+        const chatHistoryForServer = messages.filter(msg => 
             msg.role !== 'system' && 
-            msg.id !== 'initial-greeting' // Don't send the initial greeting back to server
+            msg.id !== 'initial-greeting' 
         )
+        // --- END FIX ---
 
-        const contextLength = JSON.stringify(chatHistory).length + userMessageText.length
+        const contextLength = JSON.stringify(chatHistoryForServer).length + userMessageText.length
         
         if (contextLength > CLIENT_CONTEXT_WINDOW_SOFT_LIMIT) {
             setDisplayWarning(
@@ -107,7 +123,7 @@ export default function ChatBox() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ query: userMessageText, chatHistory: chatHistory, sessionId })
+                body: JSON.stringify({ query: userMessageText, chatHistory: chatHistoryForServer, sessionId })
             })
 
             if (!response.ok) {
@@ -117,23 +133,24 @@ export default function ChatBox() {
 
             const data = await response.json()
 
-            // The backend returns the complete updated history including the new user message and AI response
-            // We need to prepend the initial greeting if this was the first message
-            let updatedHistory = data.updatedChatHistory;
-            
-            // If the chat history was empty before (only had initial greeting), add it back
-            if (chatHistory.length === 0) {
-                updatedHistory = [
-                    {
-                        id: "initial-greeting",
-                        role: "model",
-                        parts: [{ text: "Hello! I'm here to assist you with resume analysis, job matching, and career-related questions. How can I help you today?" }]
-                    },
-                    ...updatedHistory
-                ];
-            }
+            // --- START FIX ---
+            // 4. When the response comes back, only append the AI's new message.
+            //    The `data.updatedChatHistory` from the server will contain the full history
+            //    including the user's message and the AI's new response.
+            //    The AI's new response is always the last element in `data.updatedChatHistory`.
+            const newAIResponse = data.updatedChatHistory[data.updatedChatHistory.length - 1];
 
-            setMessages(updatedHistory)
+            setMessages((prevMessages) => {
+                // If it's the very first user message, `prevMessages` currently looks like:
+                // `[initial-greeting, userMessage]`
+                // And `newAIResponse` is the first AI response.
+                // If it's a subsequent message, `prevMessages` looks like:
+                // `[initial-greeting, user1, model1, user2, model2, userMessage]`
+                // We just need to append the `newAIResponse`.
+                return [...prevMessages, newAIResponse];
+            });
+            // --- END FIX ---
+
             setCurrentCompany(data.targetCompany)
             setSessionId(data.sessionId) // Store session ID
 
@@ -147,14 +164,11 @@ export default function ChatBox() {
                 parts: [{ text: `Error: ${errorMessageText}` }],
             }
 
-            // Add the user message and error message to current state
-            const userMessage: ChatMessage = {
-                id: Date.now().toString(),
-                role: "user",
-                parts: [{ text: userMessageText }]
-            }
-
-            setMessages((prevMessages) => [...prevMessages, userMessage, errorMessage])
+            // --- START FIX ---
+            // 5. When an error occurs, append only the error message.
+            //    The user's message is already displayed.
+            setMessages((prevMessages) => [...prevMessages, errorMessage])
+            // --- END FIX ---
             setDisplayWarning(`Server Error: ${errorMessageText} 🚨`)
         } finally {
             setIsSending(false)
@@ -176,14 +190,14 @@ export default function ChatBox() {
                         <div
                             key={msg.id}
                             className={`flex ${
-                            msg.role === "user" ? "justify-end" : "justify-start"
+                                msg.role === "user" ? "justify-end" : "justify-start"
                             }`}
                         >
                             <div
                                 className={`p-3 rounded-lg max-w-[80%] ${
                                     msg.role === "user"
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-200 text-gray-800"
+                                        ? "bg-blue-500 text-white"
+                                        : "bg-gray-200 text-gray-800"
                                 }`}
                             >
                                 {msg.parts.map((part, partIndex) => (
@@ -195,11 +209,11 @@ export default function ChatBox() {
                 })}
 
                 {isSending && (
-                <div className="flex justify-start">
-                    <div className="p-3 rounded-lg bg-gray-200 text-gray-800">
-                    <div className="animate-pulse">...thinking</div>
+                    <div className="flex justify-start">
+                        <div className="p-3 rounded-lg bg-gray-200 text-gray-800">
+                            <div className="animate-pulse">...thinking</div>
+                        </div>
                     </div>
-                </div>
                 )}
                 <div ref={messagesEndRef} />
             </div>
@@ -218,7 +232,7 @@ export default function ChatBox() {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter" && !isSending) {
-                        ask();
+                            ask();
                         }
                     }}
                     placeholder={isSending ? "Thinking..." : "Type your message..."}
