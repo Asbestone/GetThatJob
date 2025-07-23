@@ -4,6 +4,10 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import puppeteer from "puppeteer";
 
+interface VerifyInternRequestBody {
+  linkedinUrl: string;
+}
+
 export async function POST(req: NextRequest) {
   // 1) Ensure the user is signed in
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
@@ -12,7 +16,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 2) Parse the incoming URL
-  let body: any;
+  let body: VerifyInternRequestBody;
   try {
     body = await req.json();
   } catch {
@@ -27,9 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     // 3) Launch Puppeteer to fetch the live page
     browser = await puppeteer.launch({
-      headless: false,
-      devtools: true,
-      slowMo: 100,
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -39,54 +41,36 @@ export async function POST(req: NextRequest) {
         "Chrome/114.0.0.0 Safari/537.36"
     );
     await page.goto(linkedinUrl, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
+      waitUntil: "domcontentloaded",
+      timeout: 10000,
     });
 
-    // 4) Wait for Experience (if visible)
-    await page
-      .waitForSelector('section[aria-label="Experience"], .experience-section', {
-        timeout: 10000,
-      })
-      .catch(() => {});
-
-    // 5) Grab raw HTML and scrape the <li> entries
-    const rawHtml = await page.content();
-    const experiences = await page.$$eval(
-      'section[aria-label="Experience"] li, .experience-section li',
-      (nodes) =>
-        nodes.map((li) => {
-          const titleEl = li.querySelector("h3 span");
-          const compEl = li.querySelector(
-            "p.pv-entity__secondary-title, .pv-entity__company-summary-info a"
-          );
-          const datesEl = li.querySelector(
-            "h4 span:nth-child(2), .pv-entity__date-range span:nth-child(2)"
-          );
-          return {
-            title: titleEl?.textContent?.trim() ?? "",
-            company: compEl?.textContent?.trim() ?? "",
-            dates: datesEl?.textContent?.trim() ?? "",
-          };
-        })
+    // 5) Grab raw HTML and scrape the companies using the new selector
+    const companies = await page.$$eval(
+      ".experience__list > li div h4",
+      (nodes) => nodes.map((h4) => h4.textContent?.trim() ?? "")
     );
 
     await browser.close();
 
-    // 6) Check for “Google”
-    const verification = experiences.some((xp) =>
-      xp.company.toLowerCase().includes("google")
+    // 6) Check for exact "Google" match (case-insensitive)
+    const verification = companies.some(
+      (company) => company.toLowerCase() === "google"
     )
       ? "VERIFIED"
-      : "NOT VERIFIED";
+      : "UNVERIFIED";
 
-    // 7) Return rawHtml + scraped experiences + verification
-    return NextResponse.json({ rawHtml, experiences, verification });
-  } catch (e: any) {
+    // 7) Return rawHtml + scraped companies + verification
+    return NextResponse.json({ verification });
+  } catch (e: unknown) {
     if (browser) await browser.close();
     console.error("Scraping error:", e);
+    let message = "Unknown error";
+    if (e instanceof Error) {
+      message = e.message;
+    }
     return NextResponse.json(
-      { error: "Failed to scrape LinkedIn", details: e.message },
+      { error: "Failed to scrape LinkedIn", details: message },
       { status: 502 }
     );
   }
