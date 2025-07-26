@@ -65,6 +65,15 @@ function DevResumeUpload() {
   const [compareResult, setCompareResult] = useState<CompareResult | null>(
     null
   );
+  const [profileUrl, setProfileUrl] = useState<string>("");
+  const [profileUrlError, setProfileUrlError] = useState<string>("");
+
+  // LinkedIn profile URL validation
+  const validateLinkedInUrl = (url: string) => {
+    // Accepts URLs like https://www.linkedin.com/in/username or https://linkedin.com/in/username
+    const regex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$/i;
+    return regex.test(url.trim());
+  };
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -170,8 +179,43 @@ function DevResumeUpload() {
       return;
     }
 
+    if (!validateLinkedInUrl(profileUrl)) {
+      setProfileUrlError(
+        "Please enter a valid LinkedIn profile URL (e.g. https://www.linkedin.com/in/your-profile)"
+      );
+      return;
+    }
+
+    setProfileUrlError("");
     setIsProcessing(true);
     try {
+      console.log("🔍 Verifying user employment...");
+
+      // Step 1: Verify employment
+      const verifyResponse = await fetch("/api/verifyintern", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          linkedinUrl: profileUrl,
+          targetCompany: targetCompany.trim(),
+        }),
+      });
+
+      const verifyResult = await verifyResponse.json();
+
+      if (!verifyResponse.ok || !verifyResult.success) {
+        console.error(
+          "❌ Verification failed:",
+          verifyResult.error || verifyResult.message
+        );
+        alert(
+          `Verification failed: ${verifyResult.error || verifyResult.message}`
+        );
+        return; // Stop further processing if verification fails
+      }
+
+      console.log("✅ Verification successful!");
+
       console.log("🚀 Starting vectorization and upload...");
 
       const vectorizeResponse = await fetch("/api/vectorize", {
@@ -182,7 +226,7 @@ function DevResumeUpload() {
         body: JSON.stringify({
           resumeData: parsedContent,
           targetCompany: targetCompany.trim(),
-          userId: `dev-user-${Date.now()}`, // Generate a dev user ID
+          userId: `dev-user-${Date.now()}`,
         }),
       });
 
@@ -258,13 +302,39 @@ function DevResumeUpload() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          Development Mode - Resume Vectorization
-        </h2>
-        <p className="text-gray-600">
-          Skip verification - directly upload vectorized resumes to Zilliz Cloud
-        </p>
+      {/* LinkedIn Profile URL Input */}
+      <div className="mb-6">
+        <label
+          htmlFor="linkedin-url"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          LinkedIn Profile URL (Required)
+        </label>
+        <input
+          id="linkedin-url"
+          type="url"
+          value={profileUrl}
+          onChange={(e) => {
+            setProfileUrl(e.target.value);
+            if (e.target.value.trim() === "") {
+              setProfileUrlError("");
+            } else if (!validateLinkedInUrl(e.target.value)) {
+              setProfileUrlError(
+                "Please enter a valid LinkedIn profile URL (e.g. https://www.linkedin.com/in/your-profile)"
+              );
+            } else {
+              setProfileUrlError("");
+            }
+          }}
+          placeholder="https://www.linkedin.com/in/your-profile"
+          className={`w-full p-3 border ${
+            profileUrlError ? "border-red-500" : "border-gray-300"
+          } rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+          required
+        />
+        {profileUrlError && (
+          <p className="mt-2 text-sm text-red-600">{profileUrlError}</p>
+        )}
       </div>
 
       {/* Target Company Input */}
@@ -348,7 +418,12 @@ function DevResumeUpload() {
             <div className="mt-4">
               <button
                 onClick={vectorizeAndUpload}
-                disabled={isProcessing || !targetCompany.trim()}
+                disabled={
+                  isProcessing ||
+                  !targetCompany.trim() ||
+                  !profileUrl.trim() ||
+                  !!profileUrlError
+                }
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 {isProcessing

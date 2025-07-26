@@ -1,41 +1,65 @@
-import { GoogleGenAI } from "@google/genai"
-import fs from "fs"
-import path from "path"
-import { zillizService } from "./zilliz"
+import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
+import path from "path";
+import { zillizService } from "./zilliz";
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API})
-
-export async function generateAnswer(context: string): Promise<string> {
-    //console.log("gemini endpoint hit")
-    //console.log(context)
-    const [result] = await Promise.all([
-        ai.models.generateContent({
-            model: "gemini-2.0-flash-lite",
-            contents: context
-        })
-    ])
-    //console.log(result)
-    return result.text ?? ""
+const apiKey = process.env.GEMINI_API;
+if (!apiKey) {
+  throw new Error("GEMINI_API environment variable is not set");
 }
 
-export async function extractCompany(query: string): Promise<string | undefined> {
-    const promptPath = path.join(process.cwd(), 'src', 'app', 'prompts', 'extract-company-name.txt')
-    const promptTemplate = fs.readFileSync(promptPath, "utf8")
+const ai = new GoogleGenAI({ apiKey });
 
-    const companies = await zillizService.getCompanies()
-    const companiesString = companies.join(", ")
-    //console.log(companiesString)
+// Cache the prompt template at module load time
+const promptTemplatePath = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "prompts",
+  "extract-company-name.txt"
+);
+let promptTemplate: string;
+try {
+  promptTemplate = fs.readFileSync(promptTemplatePath, "utf8");
+} catch (e) {
+  promptTemplate = "";
+  console.error("Failed to load extract-company-name.txt:", e);
+}
 
-    const prompt = `${promptTemplate}
+export async function generateAnswer(context: string): Promise<string> {
+  //console.log("gemini endpoint hit")
+  //console.log(context)
+  const [result] = await Promise.all([
+    ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: context,
+    }),
+  ]);
+  //console.log(result)
+  return result.text ?? "";
+}
+
+export async function extractCompany(
+  query: string
+): Promise<string | undefined> {
+  const companies = await zillizService.getCompanies();
+  const companiesString = companies.join(", ");
+
+  const prompt = `${promptTemplate}
         Companies:\n
         ${companiesString}\n\n
         Query:\n
-        ${query}`
+        ${query}`;
 
-    const response = await generateAnswer(prompt)
+  const response = await generateAnswer(prompt);
 
-    let company: string | undefined = response ? response.trim() : "__NONE__";
-    if (company === "__NONE__") company = undefined
-
-    return company
+  let company: string | undefined = undefined;
+  if (
+    response &&
+    response.trim().length > 0 &&
+    response.trim() !== "__NONE__"
+  ) {
+    company = response.trim();
+  }
+  return company;
 }

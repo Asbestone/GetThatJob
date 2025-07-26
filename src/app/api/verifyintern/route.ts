@@ -6,6 +6,7 @@ import puppeteer from "puppeteer";
 
 interface VerifyInternRequestBody {
   linkedinUrl: string;
+  company?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -22,9 +23,12 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { linkedinUrl } = body;
+  const { linkedinUrl, company } = body;
   if (typeof linkedinUrl !== "string") {
     return NextResponse.json({ error: "Missing linkedinUrl" }, { status: 400 });
+  }
+  if (typeof company !== "string" || !company.trim()) {
+    return NextResponse.json({ error: "Missing company" }, { status: 400 });
   }
 
   let browser;
@@ -41,9 +45,18 @@ export async function POST(req: NextRequest) {
         "Chrome/114.0.0.0 Safari/537.36"
     );
     await page.goto(linkedinUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
+      waitUntil: "networkidle2",
+      timeout: 30000,
     });
+
+    const currentUrl = page.url();
+    if (currentUrl.includes("/login") || currentUrl.includes("/authwall")) {
+      await browser.close();
+      return NextResponse.json(
+        { error: "LinkedIn redirected to sign-in" },
+        { status: 403 }
+      );
+    }
 
     // 5) Grab raw HTML and scrape the companies using the new selector
     const companies = await page.$$eval(
@@ -53,9 +66,9 @@ export async function POST(req: NextRequest) {
 
     await browser.close();
 
-    // 6) Check for exact "Google" match (case-insensitive)
+    // 6) Check for exact match with provided company (case-insensitive)
     const verification = companies.some(
-      (company) => company.toLowerCase() === "google"
+      (c) => c.toLowerCase() === company.toLowerCase()
     )
       ? "VERIFIED"
       : "UNVERIFIED";

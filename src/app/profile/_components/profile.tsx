@@ -9,9 +9,7 @@ import Link from "next/link";
 
 export default function Profile({ session }: { session: any }) {
   const [profileUrl, setProfileUrl] = useState(
-    session?.user?.id
-      ? `https://www.linkedin.com/in/${session.user.id}/`
-      : ""
+    session?.user?.id ? `https://www.linkedin.com/in/${session.user.id}/` : ""
   );
   const [meJson, setMeJson] = useState<any>(null);
   const [verifyResult, setVerifyResult] = useState<any>(null);
@@ -60,14 +58,14 @@ export default function Profile({ session }: { session: any }) {
             <h1 className="text-title mb-1 mt-4 text-xl font-semibold">
               Welcome, {session.user?.name}!
             </h1>
-            <p className="text-sm">
-              Verify your LinkedIn experience
-            </p>
+            <p className="text-sm">Verify your LinkedIn experience</p>
           </div>
 
           {err && (
             <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-800 text-sm">Error loading profile: {err}</p>
+              <p className="text-red-800 text-sm">
+                Error loading profile: {err}
+              </p>
             </div>
           )}
 
@@ -111,9 +109,7 @@ export default function Profile({ session }: { session: any }) {
                 >
                   Open Profile
                 </Button>
-                <Button onClick={handleVerify}>
-                  Verify Experience
-                </Button>
+                <Button onClick={handleVerify}>Verify Experience</Button>
               </div>
 
               {/* Raw Profile Data (Collapsible) */}
@@ -134,7 +130,9 @@ export default function Profile({ session }: { session: any }) {
           {verifyResult && (
             <div className="mt-6 space-y-4">
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-3">Verification Results</h3>
+                <h3 className="text-lg font-semibold mb-3">
+                  Verification Results
+                </h3>
                 <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                   <pre className="text-sm text-green-800 overflow-x-auto max-h-64">
                     {JSON.stringify(verifyResult, null, 2)}
