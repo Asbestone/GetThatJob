@@ -192,12 +192,13 @@ function DevResumeUpload() {
       console.log("🔍 Verifying user employment...");
 
       // Step 1: Verify employment
+      console.log(targetCompany.trim());
       const verifyResponse = await fetch("/api/verifyintern", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           linkedinUrl: profileUrl,
-          targetCompany: targetCompany.trim(),
+          company: targetCompany.trim(),
         }),
       });
 
