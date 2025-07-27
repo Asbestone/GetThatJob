@@ -51,6 +51,7 @@ export async function extractCompany(
         Query:\n
         ${query}`;
 
+  console.log("Prompt for company extraction:", prompt);
   const response = await generateAnswer(prompt);
 
   let company: string | undefined = undefined;
