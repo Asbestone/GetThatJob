@@ -192,7 +192,6 @@ function DevResumeUpload() {
       console.log("🔍 Verifying user employment...");
 
       // Step 1: Verify employment
-      console.log(targetCompany.trim());
       const verifyResponse = await fetch("/api/verifyintern", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -203,6 +202,7 @@ function DevResumeUpload() {
       });
 
       const verifyResult = await verifyResponse.json();
+      console.log("Verify result:", verifyResult);
 
       if (!verifyResponse.ok || !verifyResult.success) {
         console.error(

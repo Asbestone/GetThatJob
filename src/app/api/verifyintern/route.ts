@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   try {
     // 3) Launch Puppeteer to fetch the live page
     browser = await puppeteer.launch({
-      headless: true,
+      headless: !process.env.DEBUG,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -64,17 +64,17 @@ export async function POST(req: NextRequest) {
       (nodes) => nodes.map((h4) => h4.textContent?.trim() ?? "")
     );
 
+    console.log("Scraped companies:", companies);
+
     await browser.close();
 
     // 6) Check for exact match with provided company (case-insensitive)
     const verification = companies.some(
       (c) => c.toLowerCase() === company.toLowerCase()
-    )
-      ? "VERIFIED"
-      : "UNVERIFIED";
+    );
 
     // 7) Return rawHtml + scraped companies + verification
-    return NextResponse.json({ verification });
+    return NextResponse.json({ success: verification });
   } catch (e: unknown) {
     if (browser) await browser.close();
     console.error("Scraping error:", e);
